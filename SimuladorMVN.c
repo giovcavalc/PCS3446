@@ -89,7 +89,6 @@ int main() {
     return 0;
 }
 
-
 // FUNÇÕES RESPONSÁVEIS PELO FUNCIONAMENTO DA MÁQUINA DE VON NEUMANN
 void resetRegistradores() {
     ac = 0x0;

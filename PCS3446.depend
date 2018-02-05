@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1517872580 source:c:\users\giovc\documents\github\pcs3446\simuladormvn.c
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<inttypes.h>
+
