@@ -1,9 +1,9 @@
 #include <math.h>
-#include <stdio.h>
+#include <cstdio>
 #include <stdlib.h>
-#include <string.h>
+#include <cstring>
 //#include <stdint.h>
-#include <inttypes.h>
+#include <cinttypes>
 
 #define MAX 8 // Tamanho máximo de uma instrucao. Na verdade o tamanho nao vai passar de 7 se houver um unico espaco. *(/NULL)
 #define SIZEMEM 0xFFF // Tamanho da memoria
