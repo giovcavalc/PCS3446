@@ -1,8 +1,28 @@
+/*
+ * Montador.cpp
+ *
+ *  Created on: 21 de fev de 2018
+ *      Author: giovcavalc
+ */
+
 #include "Montador.h"
 
-Montador::Montador() {}
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <sstream>
 
-Montador::~Montador() {}
+namespace std {
+
+Montador::Montador() {
+	// TODO Auto-generated constructor stub
+
+}
+
+Montador::~Montador() {
+	// TODO Auto-generated destructor stub
+}
 
 vector<pair<string, int>> Montador::carregaPrograma(string programa) {
     ifstream prog;
@@ -18,7 +38,7 @@ vector<pair<string, int>> Montador::carregaPrograma(string programa) {
     //PRIMEIRA LEITURA
     this->setPrograma(programa);
 
-    prog.open(this->programa);
+    prog.open(this->programa, ios::in);
 
     if (prog.is_open()) {
 
@@ -58,7 +78,7 @@ vector<pair<string, int>> Montador::carregaPrograma(string programa) {
 
     // SEGUNDA LEITURA
 
-    prog.open(this->programa);
+    prog.open(this->programa, ios::in);
 
     if (prog.is_open()) {
         // Pega o endereço de início do programa
@@ -259,3 +279,6 @@ string Montador::getPrograma() {
 void Montador::setPrograma(string programa) {
     this->programa = programa;
 }
+
+
+} /* namespace std */

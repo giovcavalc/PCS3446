@@ -1,13 +1,23 @@
+//============================================================================
+// Name        : HelloWorldC++.cpp
+// Author      : Giovanni Cavalcante
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
 #include <math.h>
-#include <cstdio>
-#include <stdlib.h>
-#include <cstring>
-//#include <stdint.h>
 #include <cinttypes>
-#include <vector>
-#include <utility>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <string>
+#include <utility>
+#include <vector>
+
 #include "Montador.h"
+
 using namespace std;
 
 #define MAX 8 // Tamanho máximo de uma instrucao. Na verdade o tamanho nao vai passar de 7 se houver um unico espaco. *(/NULL)
@@ -44,6 +54,9 @@ void carregaPrograma2(); // OK
 Montador *montador = new Montador();
 
 int main() {
+
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
     //char instrucao[MAX];
     //int instrucaoHex;
