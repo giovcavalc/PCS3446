@@ -5,6 +5,7 @@
 		<Option title="PCS3446" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="Resources\;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/PCS3446" prefix_auto="1" extension_auto="1" />
@@ -14,6 +15,7 @@
 				<Compiler>
 					<Add option="-std=c99" />
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -23,6 +25,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -33,10 +36,19 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="SimuladorMVN.cpp" />
+		<Unit filename="include/Montador.h" />
+		<Unit filename="prog1.txt">
+			<Option virtualFolder="Resources/" />
+		</Unit>
+		<Unit filename="prog2.txt">
+			<Option virtualFolder="Resources/" />
+		</Unit>
+		<Unit filename="src/Montador.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
+			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

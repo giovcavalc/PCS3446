@@ -1,0 +1,25 @@
+		@   /010    010
+INIC	LD  UM      010 8120
+		MM  CONT    020 9170
+		MM  IMPAR   030 9140
+		MM  N2      040 9160
+LOOP    LD  CONT    050 8170
+		-   N       060 5150
+		JZ  FORA    070 1110
+		LD  CONT    080 8170
+		+   UM      090 4120
+		MM  CONT    0A0 9170
+		LD  IMPAR   0B0 8140
+		+   DOIS    0C0 4130
+		MM  IMPAR   0D0 9140
+		+   N2      0E0 4160
+		MM  N2      0F0 9160
+		JP  LOOP    100 0050
+FORA    HM  FORA    110 C110
+UM      K   01      120 01
+DOIS    K   02      130 02
+IMPAR   K   0       140 00
+N       K   4       150 04
+N2      K   0       160 00
+CONT    K   0       170 00
+		#   INIC    010

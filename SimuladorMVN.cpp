@@ -4,6 +4,11 @@
 #include <cstring>
 //#include <stdint.h>
 #include <cinttypes>
+#include <vector>
+#include <utility>
+#include <string>
+#include "Montador.h"
+using namespace std;
 
 #define MAX 8 // Tamanho máximo de uma instrucao. Na verdade o tamanho nao vai passar de 7 se houver um unico espaco. *(/NULL)
 #define SIZEMEM 0xFFF // Tamanho da memoria
@@ -25,8 +30,6 @@ int16_t pc; // program counter
 void resetRegistradores(); // OK
 void resetMemoria(); // OK
 void mostraRegistradores(); // OK
-int leInstrucao (char instrucao[MAX]); // OK
-int mnemonicoToHex (char mnemonico[MAX/2]); // OK
 void executaInstrucao (int instrucao); // OK
 int leDadoDaMemoria (int endereco); // OK
 void insereDadoNaMemoria(int dado, int endereco); // OK
@@ -38,10 +41,12 @@ void executaPrograma (int step); // OK
 void carregaPrograma1(); // OK
 void carregaPrograma2(); // OK
 
+Montador *montador = new Montador();
+
 int main() {
 
-    char instrucao[MAX];
-    int instrucaoHex;
+    //char instrucao[MAX];
+    //int instrucaoHex;
 
     int opcao = -1;
     char STEP[11];
@@ -81,6 +86,7 @@ int main() {
             else if (strcmp(STEP, "DESATIVADO") == 0)   strcpy(STEP, "ATIVADO");
             break;
         default:
+            delete montador;
             break;
         }
         printf("\n\n");
@@ -107,130 +113,6 @@ void mostraRegistradores() {
     printf("Program Counter = %04h" PRIx16, pc);
     printf("\n");
     printf("-----------------------\n");
-}
-
-int leInstrucao (char instrucao[MAX]) {
-
-    int operacao, endereco;
-    int start = -1, end = -1;
-    int len = strlen(instrucao);
-    char strOperacao[MAX/2], strEndereco[MAX/2];
-
-    // Procura o primeiro espaco na instrucao para isolar o codigo da operacao
-    for (int i = 0; i < MAX; i++) {
-        if (instrucao[i] == ' ') {
-            end = i;
-            break;
-        }
-    }
-
-    // Procura quando acabam o(s) espacos para isolar o endereco
-    for (int i = end; i < MAX; i++) {
-        if (instrucao[i] != ' ') {
-            start = i;
-            break;
-        }
-    }
-
-    // Copia o codigo da operacao para o ponteiro da operacao
-    for (int i = 0; i < end; i++) {
-        strOperacao[i] = instrucao[i];
-    }
-    strOperacao[end] = '\0'; // completa o string com o char de fim
-    operacao = mnemonicoToHex(strOperacao);
-
-    // Copia o endereco da operacao para o ponteiro endereco
-    for (int i = start; i < len; i++) {
-        strEndereco[i-start] = instrucao[i];
-    }
-    strEndereco[len-start] = '\0'; // completa o string com o char de fim
-    endereco = (int)strtol(strEndereco, NULL, 16);
-
-    return 0x1000*operacao + endereco;
-}
-
-int mnemonicoToHex(char mnemonico[MAX/2]) {
-
-    int codigo;
-
-    // jump unconditional
-    if (strcmp(mnemonico, "JP") == 0) {
-        codigo = 0x0;
-    } else
-    // jump if zero
-    if (strcmp(mnemonico, "JZ") == 0) {
-        codigo = 0x1;
-    } else
-    //jump if negative
-    if (strcmp(mnemonico, "JN") == 0) {
-        codigo = 0x2;
-    } else
-    // load value
-    if (strcmp(mnemonico, "LV") == 0) {
-        codigo = 0x3;
-    } else
-    // add
-    if (strcmp(mnemonico, "+") == 0) {
-        codigo = 0x4;
-    } else
-    // subtract
-    if (strcmp(mnemonico, "-") == 0) {
-        codigo = 0x5;
-    } else
-    // multiply
-    if (strcmp(mnemonico, "*") == 0) {
-        codigo = 0x6;
-    } else
-    // divide
-    if (strcmp(mnemonico, "/") == 0) {
-        codigo = 0x7;
-    } else
-    // load from memory
-    if (strcmp(mnemonico, "LD") == 0) {
-        codigo = 0x8;
-    } else
-    // move to memory
-    if (strcmp(mnemonico, "MM") == 0) {
-        codigo = 0x9;
-    } else
-    // subroutine call
-    if (strcmp(mnemonico, "SC") == 0) {
-        codigo = 0xA;
-    } else
-    // return from subroutine
-    if (strcmp(mnemonico, "RS") == 0) {
-        codigo = 0xB;
-    } else
-    // halt machine
-    if (strcmp(mnemonico, "HM") == 0) {
-        codigo = 0xC;
-    } else
-    // get data
-    if (strcmp(mnemonico, "GD") == 0) {
-        codigo = 0xD;
-    } else
-    // put data
-    if (strcmp(mnemonico, "PD") == 0) {
-        codigo = 0xE;
-    } else
-    //operating system call
-    if (strcmp(mnemonico, "OS") == 0) {
-        codigo = 0xF;
-    } else
-    // origin
-    if (strcmp(mnemonico, "@") == 0) {
-        codigo = -1;
-    } else
-    // end
-    if (strcmp(mnemonico, "#") == 0) {
-        codigo = -1;
-    } else
-    // constant
-    if (strcmp(mnemonico, "K") == 0) {
-        codigo = -1;
-    } else codigo = -1;
-
-    return codigo;
 }
 
 void executaInstrucao(int instrucao) {
@@ -460,34 +342,13 @@ void carregaPrograma1() {
             #   INIC    010
     */
 
-    // Pede a entrada do programa
-    insereDadoNaMemoria(0x0200, 0x000);
-    insereDadoNaMemoria(0xD000, 0x200);
-    insereDadoNaMemoria(0x9150, 0x210);
-    insereDadoNaMemoria(0x0010, 0x220);
+    vector<pair<string, int>> instrucoes = montador->carregaPrograma("prog1.txt");
 
-    // Algoritmo do programa
-    insereDadoNaMemoria(0x8120, 0x010);
-    insereDadoNaMemoria(0x9170, 0x020);
-    insereDadoNaMemoria(0x9140, 0x030);
-    insereDadoNaMemoria(0x9160, 0x040);
-    insereDadoNaMemoria(0x8170, 0x050);
-    insereDadoNaMemoria(0x5150, 0x060);
-    insereDadoNaMemoria(0x1110, 0x070);
-    insereDadoNaMemoria(0x8170, 0x080);
-    insereDadoNaMemoria(0x4120, 0x090);
-    insereDadoNaMemoria(0x9170, 0x0A0);
-    insereDadoNaMemoria(0x8140, 0x0B0);
-    insereDadoNaMemoria(0x4130, 0x0C0);
-    insereDadoNaMemoria(0x9140, 0x0D0);
-    insereDadoNaMemoria(0x4160, 0x0E0);
-    insereDadoNaMemoria(0x9160, 0x0F0);
-    insereDadoNaMemoria(0x0050, 0x100);
-    insereDadoNaMemoria(0xC110, 0x110);
+    for (pair<string, int> instrucao : instrucoes) {
+        cout << instrucao.first << " : " << instrucao.second << endl;
 
-    // Constantes usadas pelo programa
-    insereDadoNaMemoria(0x0001, 0x120); // UM
-    insereDadoNaMemoria(0x0002, 0x130); // DOIS
+        insereDadoNaMemoria(montador->stoi(instrucao.first), instrucao.second);
+    }
 
     // Ajusta o contador de programa para o início do programa carregado
     pc = 0x0;
@@ -497,51 +358,13 @@ void carregaPrograma2() {
     resetMemoria();
     resetRegistradores();
 
-    // Programa Principal
-    insereDadoNaMemoria(leInstrucao("GD 000"), 0x000);
-    insereDadoNaMemoria(leInstrucao("MM 0E0"), 0x010);
-    insereDadoNaMemoria(leInstrucao("GD 000"), 0x020);
-    insereDadoNaMemoria(leInstrucao("MM 0F0"), 0x030);
-    insereDadoNaMemoria(leInstrucao("MM FD0"), 0x040);
-    insereDadoNaMemoria(leInstrucao("SC E70"), 0x050);
-    insereDadoNaMemoria(leInstrucao("MM 100"), 0x060);
-    insereDadoNaMemoria(leInstrucao("LD 0E0"), 0x070);
-    insereDadoNaMemoria(leInstrucao("MM FD0"), 0x080);
-    insereDadoNaMemoria(leInstrucao("SC E70"), 0x090);
-    insereDadoNaMemoria(leInstrucao("+  100"), 0x0A0);
-    insereDadoNaMemoria(leInstrucao("MM 100"), 0x0B0);
-    insereDadoNaMemoria(leInstrucao("PD 000"), 0x0C0);
-    insereDadoNaMemoria(leInstrucao("HM 200"), 0x0D0);
-    // 0x0E0 = A
-    // 0x0F0 = B
-    // 0x100 = B2 -> B2 + A2
+    vector<pair<string, int>> instrucoes = montador->carregaPrograma("prog2.txt");
 
-    // Subrotina N Quadrado - começa em 0xE70 com o endereço de retorno
-    // 0xE70 = endereço de retorno
-    insereDadoNaMemoria(leInstrucao("LD FA0"), 0xE80);
-    insereDadoNaMemoria(leInstrucao("MM FF0"), 0xE90);
-    insereDadoNaMemoria(leInstrucao("MM FE0"), 0xEA0);
-    insereDadoNaMemoria(leInstrucao("MM FC0"), 0xEB0);
-    insereDadoNaMemoria(leInstrucao("LD FF0"), 0xEC0);
-    insereDadoNaMemoria(leInstrucao("-  FD0"), 0xED0);
-    insereDadoNaMemoria(leInstrucao("JZ F80"), 0xEE0);
-    insereDadoNaMemoria(leInstrucao("LD FF0"), 0xEF0);
-    insereDadoNaMemoria(leInstrucao("+  FA0"), 0xF00);
-    insereDadoNaMemoria(leInstrucao("MM FF0"), 0xF10);
-    insereDadoNaMemoria(leInstrucao("LD FC0"), 0xF20);
-    insereDadoNaMemoria(leInstrucao("+  FB0"), 0xF30);
-    insereDadoNaMemoria(leInstrucao("MM FC0"), 0xF40);
-    insereDadoNaMemoria(leInstrucao("+  FE0"), 0xF50);
-    insereDadoNaMemoria(leInstrucao("MM FE0"), 0xF60);
-    insereDadoNaMemoria(leInstrucao("JP EC0"), 0xF70);
-    insereDadoNaMemoria(leInstrucao("LD FE0"), 0xF80);
-    insereDadoNaMemoria(leInstrucao("RS E70"), 0xF90);
-    insereDadoNaMemoria(0x001, 0xFA0); // UM       = 0xFA0
-    insereDadoNaMemoria(0x002, 0xFB0); // DOIS     = 0xFB0
-    // IMPAR    = 0xFC0
-    // N        = 0xFD0
-    // N2       = 0xFE0
-    // CONT     = 0xFF0
+    for (pair<string, int> instrucao : instrucoes) {
+        cout << instrucao.first << " : " << instrucao.second << endl;
+
+        insereDadoNaMemoria(montador->stoi(instrucao.first), instrucao.second);
+    }
 
     pc = 0x0;
 }
