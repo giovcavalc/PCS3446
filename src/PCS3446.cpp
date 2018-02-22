@@ -1,17 +1,18 @@
-//============================================================================
-// Name        : HelloWorldC++.cpp
+//==============================================================================
+// Name        : PCS3446.cpp
 // Author      : Giovanni Cavalcante
 // Version     :
 // Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
-//============================================================================
+// Description : Exercício programa referente à disciplina Sistemas Operacionais
+//==============================================================================
 
 #include <math.h>
-#include <cinttypes>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
@@ -73,31 +74,31 @@ int main() {
     resetMemoria();
 
     while (opcao) {
-        printf("1. Carregar programa N Quadrado na memoria\n");
-        printf("2. Carregar programa Soma de Quadrados na memoria\n");
-        printf("3. Executar o programa carregado\n");
-        printf("4. Ativa/Desativar modo step-by-step (%s)\n", STEP);
-        printf("0. Finalizar simulacao\n");
+        cout << "1. Carregar programa N Quadrado na memoria" << endl;
+        cout << "2. Carregar programa Soma de Quadrados na memoria" << endl;
+        cout << "3. Executar o programa carregado" << endl;
+        cout << "4. Ativa/Desativar modo step-by-step (" << STEP << ")" << endl;
+        cout << "0. Finalizar simulacao" << endl;
 
-        scanf("%d", &opcao);
+        cin >> opcao;
         opcao = *it;
         it++;
 
         switch (opcao) {
         case 1:
             carregaPrograma1();
-            printf("Programa carregado com sucesso\n");
-            printf("O programa ira pedir um numero para calcular seu quadrado no inicio da execucao\n");
+            cout << "Programa carregado com sucesso" << endl;
+            cout << "O programa ira pedir um numero para calcular seu quadrado no inicio da execucao" << endl;
             break;
         case 2:
             carregaPrograma2();
-            printf("Programa carregado com sucesso\n");
-            printf("O programa ira pedir dois numeros para calcular a soma dos seus quadrados no inicio da execucao\n");
+            cout << "Programa carregado com sucesso" << endl;
+            cout << "O programa ira pedir dois numeros para calcular a soma dos seus quadrados no inicio da execucao" << endl;
             break;
         case 3:
             if (strcmp(STEP, "ATIVADO") == 0)   executaPrograma(1);
             else if(strcmp(STEP, "DESATIVADO") == 0)   executaPrograma(0);
-            printf("Programa executado com sucesso\n");
+            cout << "Programa executado com sucesso" << endl;
             break;
         case 4:
             if (strcmp(STEP, "ATIVADO") == 0)   strcpy(STEP, "DESATIVADO");
@@ -107,7 +108,7 @@ int main() {
             delete montador;
             break;
         }
-        printf("\n\n");
+        cout << endl << endl;
     }
 
     return 0;
@@ -125,12 +126,14 @@ void resetMemoria() {
 }
 
 void mostraRegistradores() {
-    printf("-----------------------\n");
-    printf("   Acumulador   = %04h" PRIx16, ac);
-    printf("\n");
-    printf("Program Counter = %04h" PRIx16, pc);
-    printf("\n");
-    printf("-----------------------\n");
+    cout << "-----------------------" << endl;
+    cout << "   Acumulador   = " << hex << noshowbase << setfill('0') << setw(4) << ac;
+//    printf("   Acumulador   = %04h" PRIx16, ac);
+    cout << endl;
+//    printf("Program Counter = %04h" PRIx16, pc);
+    cout << "Program Counter = " << hex << noshowbase << setfill('0') << setw(4) << pc;
+    cout << endl;
+    cout << "-----------------------" << endl;
 }
 
 void executaInstrucao(int instrucao) {
@@ -141,7 +144,7 @@ void executaInstrucao(int instrucao) {
     endereco = instrucao % 0x1000;
 
     if (DEBUG) {
-        printf("operacao: %x\nendereco: %x\n", operacao, endereco);
+        cout << "operacao: " << operacao << endl << "endereco: " << endereco << endl;
     }
 
     switch (operacao) {
@@ -216,15 +219,17 @@ void executaInstrucao(int instrucao) {
         break;
     // get data
     case 0xD:
-        printf("Acumulador = ");
-        scanf("%hd", &ac);
+        cout << "Acumulador = ";
+//        scanf("%hd", &ac);
+        cin >> setbase(16) >> ac;
         pc += 0x10;
         break;
     // put data
     case 0xE:
-        printf("\n********************\n");
-        printf("ACUMULADOR = %hd", ac);
-        printf("\n********************\n");
+        cout << endl << "********************" << endl;
+//        printf("ACUMULADOR = %hd", ac);
+        cout << "ACUMULADOR = " << hex << noshowbase << ac;
+        cout << endl << "********************" << endl;
         pc += 0x10;
         break;
     //operating system call
@@ -249,43 +254,48 @@ int leDadoDaMemoria(int endereco) {
 void insereDadoNaMemoria (int dado, int endereco) {
     // Falta verificar se o endereço é múltiplo de 16 !!!!
 
-    // Muda a base do dado de decimal para binário, colocando o resultado
-    // num vetor em little endian, assim como a memória
-    int dadoBinario[16];
+	if (dado >= 0 && endereco >= 0) {
+		// Muda a base do dado de decimal para binário, colocando o resultado
+		// num vetor em little endian, assim como a memória
+		int dadoBinario[16];
 
-    for (int i = 0; i < 16; i++) {
-        dadoBinario[i] = dado % 2;
-        dado = dado / 2;
-    }
+		for (int i = 0; i < 16; i++) {
+			dadoBinario[i] = dado % 2;
+			dado = dado / 2;
+		}
 
-    // Agora copia-se o vetor num espaço de 16 bits da memória começando em "endereco"
-    for (int i = 0; i < 0x10; i++) memoria[endereco+i] = dadoBinario[i];
+		// Agora copia-se o vetor num espaço de 16 bits da memória começando em "endereco"
+		for (int i = 0; i < 0x10; i++) memoria[endereco+i] = dadoBinario[i];
+	}
 }
 
 void exibeMemoriaBits(int endereco, int linhas) {
-    printf("-------------------------------------\n");
-    printf("     0 1 2 3 4 5 6 7 8 9 a b c d e f\n");
+    cout << "-------------------------------------" << endl;
+    cout << "     0 1 2 3 4 5 6 7 8 9 a b c d e f " << endl;
     for (int l = 0; l < linhas; l++) {
-        printf("%02x - ", ( endereco/0x10+l ));
+//        printf("%02x - ", ( endereco/0x10+l ));
+    	cout << hex << noshowbase << setfill('0') << setw(2) << ( endereco/0x10+l ) << " - ";
         for (int i = 0; i < 0x10; i++) {
-            printf("%d ", memoria[endereco + 0x10*l + i]);
+//            printf("%d ", memoria[endereco + 0x10*l + i]);
+        	cout << memoria[endereco + 0x10*l + i] << " " << endl;
         }
-        printf("\n");
+        cout << endl;
     }
-    printf("-------------------------------------\n");
+    cout << "-------------------------------------" << endl;
 }
 
 void exibeMemoriaWords(int endereco, int linhas) {
-    printf("-----------------------------------------------------------------------------------\n");
-    printf("    00   10   20   30   40   50   60   70   80   90   a0   b0   c0   d0   e0   f0  \n");
+    cout << "-----------------------------------------------------------------------------------" << endl;
+    cout << "    00   10   20   30   40   50   60   70   80   90   a0   b0   c0   d0   e0   f0  " << endl;
     for (int l = 0; l < linhas; l++) {
-        printf("%01x - ", ( endereco/0x100+l ));
+//        printf("%01x - ", ( endereco/0x100+l ));
+    	cout << hex << noshowbase << setfill('0') << setw(1) << ( endereco/0x100+l ) << " - ";
         for (int i = 0; i < 0x10; i++) {
-            printf("%04hx ", leDadoDaMemoria(endereco + 0x100*l + 0x10*i));
+            cout << hex << noshowbase << setfill('0') << setw(4) << leDadoDaMemoria(endereco + 0x100*l + 0x10*i) << " ";
         }
-        printf("\n");
+        cout << endl;
     }
-    printf("-----------------------------------------------------------------------------------\n");
+    cout << "-----------------------------------------------------------------------------------" << endl;
 }
 
 void exibeMemoria(char c) {
@@ -311,14 +321,14 @@ void executaPrograma(int step) {
         if (step) {
             mostraRegistradores();
             exibeMemoria('w');
-            printf("Pressione ENTER para continuar\n");
+            cout << "Pressione ENTER para continuar" << endl;
             getchar();
         }
 
         executaInstrucao(instrucao);
 
         if (DEBUG) {
-            printf("HALT = %d\n", HALT);
+            cout << "HALT = " <<  HALT << endl;
         }
     }
     mostraRegistradores();
@@ -365,7 +375,19 @@ void carregaPrograma1() {
     for (pair<string, int> instrucao : instrucoes) {
         cout << instrucao.first << " : " << instrucao.second << endl;
 
-        insereDadoNaMemoria(montador->stoi(instrucao.first, 16), instrucao.second);
+        if (instrucao.first.substr(1, 1) == "@") {
+        	// Início do programa
+        	string instrEndInicial = instrucao.first;
+        	int enderecoInicial = montador->stoi( instrEndInicial.substr(1, instrEndInicial.size()-1), 16 );
+
+        	pc = enderecoInicial;
+        } else if (instrucao.first.substr(1, 1) == "#") {
+        	// Final do programa
+        	break;
+        } else {
+        	insereDadoNaMemoria(montador->stoi(instrucao.first, 16), instrucao.second);
+        }
+
     }
 
     // Ajusta o contador de programa para o início do programa carregado

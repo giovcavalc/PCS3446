@@ -87,13 +87,31 @@ vector<pair<string, int>> Montador::carregaPrograma(string programa) {
         if (campos[0] == "@") {
             endereco = stoi(campos[1]);
             cout << "Identificando o inicio do programa: @ " << hex  << showbase << endereco << endl;
+
+            // Adiciona o endereço inicial do programa no vector de instruções
+            stringstream buffer;
+            buffer << campos[0] << hex << noshowbase << endereco;
+            pair<string, int> instrucao = make_pair(buffer.str(), endereco);
+            instrucoes.push_back(instrucao);
+        } else {
+        	cerr << "O formato do arquivo não é válido!" << endl;
         }
 
         while (getline(prog, linha)) {
             char ch = linha[0];
             stringstream buffer;
             campos = split(linha);
-            if ( (ch == ' ' || ch == '	') ) {
+            string campo0 = campos[0];
+            if (campos[0] == "#") {
+            	cout << "Identificando o final do programa: # " << endereco << endl;
+
+            	// Adiciona o endereço final do programa no vector de instruções
+				buffer << campos[0] << hex << noshowbase << endereco;
+				string end = buffer.str();
+				pair<string, int> instrucao = make_pair(buffer.str(), endereco);
+				instrucoes.push_back(instrucao);
+            }
+            else if ( (ch == ' ' || ch == '	') ) {
                 opcode = campos[0];
                 operando = campos[1];
                 buffer << hex << noshowbase << mnemonicoToHex(opcode) << geraOperando(operando, tabelaDeNomes);
