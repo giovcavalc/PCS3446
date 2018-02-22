@@ -39,6 +39,12 @@ public:
      */
     int stoi(string str);
 
+    /**
+	 * Converte o string para um int com a base dada
+	 * @return inteiro de base 10 escrito no string
+	 */
+	int stoi(string str, int base);
+
     string getPrograma();
 
     void setPrograma(string programa);
@@ -65,12 +71,6 @@ private:
      * @return vector<string> com as palavras
      */
     vector<string> split(string sentence);
-
-    /**
-     * Converte o string para um int com a base dada
-     * @return inteiro de base 10 escrito no string
-     */
-    int stoi(string str, int base);
 };
 
 } /* namespace std */

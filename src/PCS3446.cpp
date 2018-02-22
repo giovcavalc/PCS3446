@@ -61,6 +61,9 @@ int main() {
     //char instrucao[MAX];
     //int instrucaoHex;
 
+	vector<int> opcoes = {1, 3, 0};
+	vector<int>::iterator it = opcoes.begin();
+
     int opcao = -1;
     char STEP[11];
     strcpy(STEP, "DESATIVADO");
@@ -77,6 +80,8 @@ int main() {
         printf("0. Finalizar simulacao\n");
 
         scanf("%d", &opcao);
+        opcao = *it;
+        it++;
 
         switch (opcao) {
         case 1:
@@ -355,23 +360,23 @@ void carregaPrograma1() {
             #   INIC    010
     */
 
-    vector<pair<string, int>> instrucoes = montador->carregaPrograma("prog1.txt");
+    vector<pair<string, int>> instrucoes = montador->carregaPrograma("resources/prog1.txt");
 
     for (pair<string, int> instrucao : instrucoes) {
         cout << instrucao.first << " : " << instrucao.second << endl;
 
-        insereDadoNaMemoria(montador->stoi(instrucao.first), instrucao.second);
+        insereDadoNaMemoria(montador->stoi(instrucao.first, 16), instrucao.second);
     }
 
     // Ajusta o contador de programa para o início do programa carregado
-    pc = 0x0;
+    pc = 0x10;
 }
 
 void carregaPrograma2() {
     resetMemoria();
     resetRegistradores();
 
-    vector<pair<string, int>> instrucoes = montador->carregaPrograma("prog2.txt");
+    vector<pair<string, int>> instrucoes = montador->carregaPrograma("resources/prog2.txt");
 
     for (pair<string, int> instrucao : instrucoes) {
         cout << instrucao.first << " : " << instrucao.second << endl;
