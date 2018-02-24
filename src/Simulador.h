@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <string>
 
+#include "Memoria.h"
+
 namespace std {
 class Montador;
 } /* namespace std */
@@ -28,13 +30,13 @@ public:
 	bool getStep();
 	int getAc();
 	int getPc();
-	int getMemoryBit(int bitAddress);
+	int getMemoryWord(int endereco);
 	string getStepString();
 	void setAc(int ac);
 	void setEnderecamentoIndireto(bool enderecamentoIndireto);
 	void setHalt(bool halt);
 	void setPc(int pc);
-	void setMemoryBit(int bit, int bitAddress);
+	void setMemoryWord(int dado, int endereco);
 	void setStep(bool step);
 	void toggleStep();
 
@@ -43,28 +45,21 @@ public:
 	void executaPrograma();
 
 private:
-	/**
-	 * Tamanho da memoria
-	 */
-	const static int MEMSIZE = 0x1000;
 
 	// Atributos
 	bool enderecamentoIndireto;
 	bool halt;
 	bool step;
-	int memory[MEMSIZE];
 	int16_t ac; // accumulator
 	int16_t pc; // program counter
+	Memoria *memory;
 	Montador *montador;
 
 	// Métodos auxiliares
-	int getMemoryWord (int endereco);
-	void executaInstrucao (int instrucao);
-	void exibeMemoria (char c);
-	void exibeMemoriaBits (int endereco, int linhas);
-	void exibeMemoriaWords (int endereco, int linhas);
+	void executaInstrucao(int instrucao);
+	void exibeMemoria();
+	void exibeMemoriaWords(int endereco, int linhas);
 	void incrementaPc();
-	void setMemoryWord(int dado, int endereco);
 	void mostraDetalhes();
 	void mostraRegistradores();
 	void resetMemoria();
