@@ -210,7 +210,7 @@ int Montador::mnemonicoToHex(string opcode) {
         codigo = 0xA;
     } else
     // indirect addressing
-    if (opcode.compare("IA") == 0) {
+    if (opcode.compare("IND") == 0) {
         codigo = 0xB;
     } else
     // halt machine
