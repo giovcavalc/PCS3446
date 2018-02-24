@@ -21,7 +21,7 @@ NQUAD   LD  UM      110
         MM  N2      130
         MM  IMPAR   140
 LOOP    LD  CONT    150
-        -   LD0     160
+        -   N	    160
         JZ  FIM     170
         LD  CONT    180
         +   UM      190
@@ -33,10 +33,11 @@ LOOP    LD  CONT    150
         MM  N2      1F0
         JP  LOOP    200
 FIM     LD  N2      210
-        RS  NQUAD   220
+        JP  NQUAD   220
 UM      K   01      230
 DOIS    K   02      240
 IMPAR   K   0       250
 N       K   0       260
 N2      K   0       270
 CONT    K   0       280
+		#	INIC	280

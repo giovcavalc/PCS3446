@@ -1,0 +1,11 @@
+		@	/00		000
+INIC	LV	/F00	000	-- carrega o valor 0xf00 no acumulador
+		MM  END		010 -- salva o valor 0xf00 em memoria[END]
+		LV	/12		020 -- carrega o valor 0x12 no acumulador
+		IA	000		030 -- ativa o endereçamento indireto para a próxima instrução
+		MM	END		040 -- salva o valor 0x12 em memoria[0xf00] (pois é o valor salvo em memoria[END]) 
+		LV	/D		050 -- carrega o valor 0xd no acumulador
+		IA	000		060 -- ativa o endereçamento indireto para a próxima instrução
+		+	END		070 -- soma os valores 0xd (acumulador) e 0x12 (memoria[0xf00])
+		HM	000		080
+END		K	/100	090 -- valor do endereço que contém o endereço efetivo para instruções de end. indireto

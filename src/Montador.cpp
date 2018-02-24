@@ -13,6 +13,8 @@
 #include <iterator>
 #include <sstream>
 
+#define DEBUG false
+
 namespace std {
 
 Montador::Montador() {
@@ -47,7 +49,9 @@ vector<pair<string, int>> Montador::carregaPrograma(string programa) {
         campos = this->split(linha);
         if (campos[0] == "@") {
             endereco = stoi(campos[1]);
-            cout << "Identificando o inicio do programa: @ " << hex  << showbase << endereco << endl;
+            if (DEBUG) {
+            	cout << "Identificando o inicio do programa: @ " << hex  << showbase << endereco << endl;
+            }
         }
 
         while (getline(prog, linha)) {
@@ -56,20 +60,26 @@ vector<pair<string, int>> Montador::carregaPrograma(string programa) {
             if ( (ch == ' ' || ch == '	') ) {
                 opcode = campos[0];
                 operando = campos[1];
-                cout << "OPCODE: " << opcode << " - END: " << endereco << endl;
+                if (DEBUG) {
+                	cout << "OPCODE: " << opcode << " - END: " << endereco << endl;
+                }
             } else {
                 label = campos[0];
                 opcode = campos[1];
                 operando = campos[2];
 
-                cout << "LABEL: " << label << " - OPCODE: " << opcode << " - END: " << operando << endl;
+                if (DEBUG) {
+                	cout << "LABEL: " << label << " - OPCODE: " << opcode << " - END: " << operando << endl;
+                }
 
                 pair<string, int> entry = make_pair(label, endereco);
                 tabelaDeNomes.insert(entry);
             }
             endereco += 0x10;
         }
-        mostraTabelaDeNomes(tabelaDeNomes);
+        if (DEBUG) {
+        	mostraTabelaDeNomes(tabelaDeNomes);
+        }
     } else {
         cout << "Nao foi possivel abrir o arquivo." << endl;
     }
@@ -86,7 +96,9 @@ vector<pair<string, int>> Montador::carregaPrograma(string programa) {
         campos = split(linha);
         if (campos[0] == "@") {
             endereco = stoi(campos[1]);
-            cout << "Identificando o inicio do programa: @ " << hex  << showbase << endereco << endl;
+            if (DEBUG) {
+            	cout << "Identificando o inicio do programa: @ " << hex  << showbase << endereco << endl;
+            }
 
             // Adiciona o endereço inicial do programa no vector de instruções
             stringstream buffer;
@@ -101,26 +113,26 @@ vector<pair<string, int>> Montador::carregaPrograma(string programa) {
             char ch = linha[0];
             stringstream buffer;
             campos = split(linha);
-            string campo0 = campos[0];
             if (campos[0] == "#") {
-            	cout << "Identificando o final do programa: # " << endereco << endl;
-
             	// Adiciona o endereço final do programa no vector de instruções
-				buffer << campos[0] << hex << noshowbase << endereco;
-				string end = buffer.str();
+				buffer << campos[0] << hex << noshowbase << geraOperando(campos[1], tabelaDeNomes);
 				pair<string, int> instrucao = make_pair(buffer.str(), endereco);
 				instrucoes.push_back(instrucao);
+
+				if (DEBUG) {
+					cout << "Identificando o final do programa: " << buffer.str() << endl;
+				}
             }
             else if ( (ch == ' ' || ch == '	') ) {
                 opcode = campos[0];
                 operando = campos[1];
-                buffer << hex << noshowbase << mnemonicoToHex(opcode) << geraOperando(operando, tabelaDeNomes);
+                buffer << hex << noshowbase << mnemonicoToHex(opcode) << setfill('0') << setw(3) << right << geraOperando(operando, tabelaDeNomes);
             } else {
                 label = campos[0];
                 opcode = campos[1];
                 operando = campos[2];
 
-                buffer << hex << noshowbase << mnemonicoToHex(opcode) << geraOperando(operando, tabelaDeNomes);
+                buffer << hex << noshowbase << mnemonicoToHex(opcode) << setfill('0') << setw(3) << right << geraOperando(operando, tabelaDeNomes);
             }
 
             pair<string, int> instrucao = make_pair(buffer.str(), endereco);
@@ -197,8 +209,8 @@ int Montador::mnemonicoToHex(string opcode) {
     if (opcode.compare("SC") == 0) {
         codigo = 0xA;
     } else
-    // return from subroutine
-    if (opcode.compare("RS") == 0) {
+    // indirect addressing
+    if (opcode.compare("IA") == 0) {
         codigo = 0xB;
     } else
     // halt machine
@@ -297,6 +309,5 @@ string Montador::getPrograma() {
 void Montador::setPrograma(string programa) {
     this->programa = programa;
 }
-
 
 } /* namespace std */

@@ -22,4 +22,4 @@ IMPAR   K   0       140 00
 N       K   4       150 04
 N2      K   0       160 00
 CONT    K   0       170 00
-		#   INIC    010
+		#   INIC    180
